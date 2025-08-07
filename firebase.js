@@ -2,14 +2,9 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import firebaseConfig from './firebase.config';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBa2xbuvQGcLwsOwPmq5Lv6nAW55R-Xqfk",
-  authDomain: "vbtracker-53891.firebaseapp.com",
-  databaseURL: "https://vbtracker-53891-default-rtdb.firebaseio.com",
-  projectId: "vbtracker-53891",
-};
-
+let app;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
 } else {
