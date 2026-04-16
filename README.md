@@ -13,6 +13,8 @@ Funcionalidades Principais:
 4. Login e Registro de Usuário: Sistema de login para os responsáveis, permitindo cadastrar e gerenciar o rastreamento dos vulneráveis.
 5. Registro de Vulnerável: Os responsáveis podem registrar as informações da pessoa vulnerável para iniciar o monitoramento.
 
+Todas as informações adicionais e versão inicial do projeto podem ser encontrados [aqui](https://docs.google.com/document/d/1Sr8idyhF_TGGCf7jsBuZDtr9_B3q8MjVMyUGE3Y_fFI/edit?usp=sharing)
+
 ------------------------------------------------------------------------------------------------------------------------------------------
 
 Tecnologias Utilizadas:
@@ -47,4 +49,3 @@ Telas do Aplicativo:
    ![image](https://github.com/user-attachments/assets/e403b55d-70bc-40eb-8eb2-749b2730803b)
 
 ------------------------------------------------------------------------------------------------------------------------------------------
-Todas as informações adicionais e versão inicial do projeto podem ser encontrados [aqui](https://docs.google.com/document/d/1Sr8idyhF_TGGCf7jsBuZDtr9_B3q8MjVMyUGE3Y_fFI/edit?usp=sharing)
