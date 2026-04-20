@@ -11,10 +11,6 @@ import TelaHome from './src/components/TelaHome/index';
 import TelaAlert from './src/components/TelaAlert/index';
 import TelaRegisterVulnerable from './src/components/TelaRegisterVulnerable/index';
 
-setTimeout(function(){ 
-    
-}, 3000);
-
 const Stack = createStackNavigator(); // <-- resume o código
 
 export default function App({ navigation }) {

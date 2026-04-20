@@ -1,72 +1,52 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { auth, db } from '../../../firebase';
+import { db } from '../../../firebase';
+import { collection, addDoc } from "firebase/firestore";
 import { TextInputMask } from 'react-native-masked-text';
-import * as ImagePicker from 'expo-image-picker';
 
 const schema = yup.object().shape({
   nome: yup.string().required('Digite o nome completo'),
   idade: yup.number().required('Campo obrigatório').positive('Idade deve ser um número positivo').typeError("Idade inválida"),
-  cpf: yup.string().required('Digite um CPF válido'),
+  cpf: yup.string().required('Digite um CPF válido').matches(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'CPF em formato inválido'),
   problemaSaude: yup.string(),
 });
 
 export default function App ({navigation}) {
 
-  function registerFirebase (schema) {
-  
-  db.collection("Vulnerable").doc(schema.cpf).set({
-    name: schema.nome,
-    age: schema.idade,
-    health: schema.problemaSaude
-  })
-  .catch((error) => {
-    alert(error.message)
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
   });
-    alert("Cadastrado com Sucesso!");  
-    goToScreenTab();
-  }
 
   const goToScreenTab = () => {
     navigation.navigate('Tab');
   }
 
-  const [imageSource, setImageSource] = React.useState(null);
-
-  const selectImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync();
-
-    if (!result.cancelled) {
-      setImageSource(result.uri);
-      setValue('photo', result.uri); // Atualiza o valor do campo 'photo' no React Hook Form
+  const registerFirebase = async (data) => {
+    try {
+      await addDoc(collection(db, "Vulnerable"), {
+        name: data.nome,
+        age: data.idade,
+        cpf: data.cpf,
+        health: data.problemaSaude,
+        createdAt: new Date(),
+      });
+      Alert.alert("Sucesso", "Cadastrado com Sucesso!");
+      goToScreenTab();
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      Alert.alert("Erro", "Ocorreu um erro ao cadastrar. Tente novamente.");
     }
-  };
-  const { control, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(schema),
-  });
+  }
 
+  //TODO: Implementar upload de imagem para o Firebase Storage.
+  //A funcionalidade de imagem foi removida temporariamente por estar incompleta.
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cadastro da pessoa vulnerável</Text>
-      <Controller
-        control={control}
-        name="photo"
-        defaultValue=""
-        render={({ field: { onChange, value } }) => (
-          <View style={styles.imageView}>
-            <TouchableOpacity style={styles.btnimage} onPress={selectImage} >
-              <Text style={styles.text}>Selecionar Imagem</Text>
-            </TouchableOpacity>
-            {imageSource && <Image source={{ uri: imageSource }} style={styles.image} />}
-          </View>
-        )}
-      />
-      <Text style={styles.txtnote}>*É importante que coloque uma foto atualizada</Text>
-      {errors.photo && <Text style={styles.error}>{errors.photo.message}</Text>}
       <Controller
         control={control}
         name="nome"
@@ -74,8 +54,8 @@ export default function App ({navigation}) {
         render={({ field: { onChange, value } }) => (
           <TextInput
             style={[styles.input, {
-              borderWidth: errors.idade && 1,
-              borderColor: errors.idade && '#ff375b' 
+              borderWidth: errors.nome && 1,
+              borderColor: errors.nome && '#ff375b'
             }]}
             placeholder="Nome Completo"
             placeholderTextColor="black"
@@ -111,18 +91,16 @@ export default function App ({navigation}) {
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInputMask
             style={[styles.input, {
-              borderWidth: errors.idade && 1,
-              borderColor: errors.idade && '#ff375b' 
+              borderWidth: errors.cpf && 1,
+              borderColor: errors.cpf && '#ff375b'
             }]}
-            type='cpf'
+            type={'cpf'}
             placeholder="CPF"
             placeholderTextColor="black"
             keyboardType="numeric"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            autoCompleteType="off"
-            textContentType="none"
           />
         )}
       />
@@ -134,8 +112,8 @@ export default function App ({navigation}) {
         render={({ field: { onChange, value } }) => (
           <TextInput
             style={[styles.input, {
-              borderWidth: errors.idade && 1,
-              borderColor: errors.idade && '#ff375b' 
+              borderWidth: errors.problemaSaude && 1,
+              borderColor: errors.problemaSaude && '#ff375b'
             }]}
             placeholder="Problema de Saúde (opcional)"
             placeholderTextColor="black"
